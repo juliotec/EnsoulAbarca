@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Drawing;
 using System.Linq;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
@@ -60,11 +60,16 @@ namespace EnsoulAbarca.Champions
 
             if (Q.IsReady())
             {
-                var target = TargetSelector.GetTargets(Q.SData.CastRadius, DamageType.Physical, true).OrderBy(i => i.Health).FirstOrDefault();
+                var target = TargetSelector.GetTargets(Q.SData.CastRadius, DamageType.Mixed, true).OrderBy(i => i.Health).FirstOrDefault();
 
                 if (target != null)
                 {
-                    ObjectManager.Player.Spellbook.CastSpell(SpellSlot.Item2);
+                    var flaskSlot = ObjectManager.Player.GetSpellSlot("ItemCrystalFlask");
+
+                    if (flaskSlot != SpellSlot.Unknown)
+                    {
+                        ObjectManager.Player.Spellbook.CastSpell(flaskSlot);
+                    }
 
                     if (R.IsReady())
                     {
