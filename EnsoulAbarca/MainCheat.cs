@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using EnsoulSharp;
 using EnsoulSharp.SDK.MenuUI;
+using EnsoulAbarca.Champions;
+
 
 namespace EnsoulAbarca
 {
@@ -74,6 +75,9 @@ namespace EnsoulAbarca
                 case GameEventId.OnReincarnate:
                 case GameEventId.OnResetChampion:
                     SetSkinId();
+                    break;
+                case GameEventId.OnChampionLevelUp:
+                    MasterYi.AutoLevelSpellQWE();
                     break;
             }
         }
