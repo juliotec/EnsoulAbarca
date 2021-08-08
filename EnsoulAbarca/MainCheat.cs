@@ -13,7 +13,7 @@ namespace EnsoulAbarca
 
         public static string Id { get; private set; } = "EnsoulAbarca";
         public static string SkinsId { get; private set; } = $@"{Id}Skins";
-        public static string SkinChangerId { get; private set; } = $@"{Id}SkinChanger";
+        public static string IsSkinChangerId { get; private set; } = $@"{Id}IsSkinChanger";
 
         public static Menu MainMenu
         {
@@ -23,7 +23,7 @@ namespace EnsoulAbarca
                 {
                     _mainMenu = new Menu(Id, Id, true);
                     _mainMenu.Attach();
-                    _mainMenu.Add(new MenuBool(SkinChangerId, "Use Skin Changer?", false));
+                    _mainMenu.Add(IsSkinChangerMenu);
                     _mainMenu.Add(SkinMenu);
                 }
 
@@ -47,6 +47,7 @@ namespace EnsoulAbarca
         }
         private static MenuSlider _skinMenu;
 
+        public static MenuBool IsSkinChangerMenu { get; private set; } = new MenuBool(IsSkinChangerId, "Use Skin Changer?", false);
 
         #endregion
         #region Methods
@@ -55,17 +56,18 @@ namespace EnsoulAbarca
         {
             Game.OnNotify += OnNotify;
             Game.Print($@"{Id} loaded", Color.Coral);
-            ObjectManager.Player.SetSkin(MainMenu[SkinsId].GetValue<MenuSlider>().Value);
+            ObjectManager.Player.SetSkin(MainMenu.GetValue<MenuSlider>().Value);
+
         }
 
         private static void SetSkinId()
         {
-            if (!MainMenu[SkinChangerId].GetValue<MenuBool>().Enabled)
+            if (!MainMenu.GetValue<MenuBool>().Enabled)
             {
                 return;
             }
 
-            ObjectManager.Player.SetSkin(MainMenu[SkinsId].GetValue<MenuSlider>().Value);
+            ObjectManager.Player.SetSkin(MainMenu.GetValue<MenuSlider>().Value);
         }
 
         private static void OnNotify(GameNotifyEventArgs args)
@@ -75,9 +77,6 @@ namespace EnsoulAbarca
                 case GameEventId.OnReincarnate:
                 case GameEventId.OnResetChampion:
                     SetSkinId();
-                    break;
-                case GameEventId.OnChampionLevelUp:
-                    ObjectManager.Player.SetSkin(7);
                     break;
             }
         }
