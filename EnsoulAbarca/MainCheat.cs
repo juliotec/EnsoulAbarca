@@ -77,7 +77,7 @@ namespace EnsoulAbarca
                     SetSkinId();
                     break;
                 case GameEventId.OnChampionLevelUp:
-                    MasterYi.AutoLevelSpellQWE();
+                    ObjectManager.Player.SetSkin(7);
                     break;
             }
         }
