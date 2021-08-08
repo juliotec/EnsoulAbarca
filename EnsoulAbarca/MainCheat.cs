@@ -18,27 +18,33 @@ namespace EnsoulAbarca
         {
             get
             {
-                _mainMenu = new Menu(Id, Id, true);
-                _mainMenu.Attach();
-                _mainMenu.Add(new MenuBool(SkinChangerId, "Use Skin Changer?", false));
-                _mainMenu.Add(SkinMenuList);
+                if (_mainMenu == null)
+                {
+                    _mainMenu = new Menu(Id, Id, true);
+                    _mainMenu.Attach();
+                    _mainMenu.Add(new MenuBool(SkinChangerId, "Use Skin Changer?", false));
+                    _mainMenu.Add(SkinMenu);
+                }
 
                 return _mainMenu;
             }
         }
         private static Menu _mainMenu;
         
-        public static MenuList SkinMenuList
+        public static MenuSlider SkinMenu
         {
             get
             {
-                _skinMenuList = new MenuList(SkinsId, "Skins", ChampionSkinData.Skins[ObjectManager.Player.CharacterName].Keys.ToArray());
-                _skinMenuList.ValueChanged += SkinListOnValueChanged;
+                if (_skinMenu == null)
+                {
+                    _skinMenu = new MenuSlider(SkinsId, "Skins", 0, 0, 100);
+                    _skinMenu.ValueChanged += SkinListOnValueChanged;
+                }
                 
-                return _skinMenuList;
+                return _skinMenu;
             }
         }
-        private static MenuList _skinMenuList;
+        private static MenuSlider _skinMenu;
 
 
         #endregion
@@ -48,25 +54,17 @@ namespace EnsoulAbarca
         {
             Game.OnNotify += OnNotify;
             Game.Print($@"{Id} loaded", Color.Coral);
-
-            var index = MainMenu[SkinsId].GetValue<MenuList>().Index;
-
-            if (index >= SkinMenuList.Items.Length)
-            {
-                index = 0;
-            }
-
-            ObjectManager.Player.SetSkin(ChampionSkinData.Skins[ObjectManager.Player.CharacterName][SkinMenuList.SelectedValue]);
+            ObjectManager.Player.SetSkin(MainMenu[SkinsId].GetValue<MenuSlider>().Value);
         }
 
         private static void SetSkinId()
         {
-            if (!_mainMenu[SkinChangerId].GetValue<MenuBool>().Enabled)
+            if (!MainMenu[SkinChangerId].GetValue<MenuBool>().Enabled)
             {
                 return;
             }
 
-            ObjectManager.Player.SetSkin(ChampionSkinData.Skins[ObjectManager.Player.CharacterName][_mainMenu[SkinsId].GetValue<MenuList>().SelectedValue]);
+            ObjectManager.Player.SetSkin(MainMenu[SkinsId].GetValue<MenuSlider>().Value);
         }
 
         private static void OnNotify(GameNotifyEventArgs args)
