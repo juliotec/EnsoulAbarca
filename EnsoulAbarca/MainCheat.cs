@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.Linq;
 using EnsoulSharp;
+using EnsoulSharp.SDK;
 using EnsoulSharp.SDK.MenuUI;
 using EnsoulAbarca.Champions;
-
 
 namespace EnsoulAbarca
 {
@@ -13,7 +14,7 @@ namespace EnsoulAbarca
 
         public static string Id { get; private set; } = "EnsoulAbarca";
         public static string SkinsId { get; private set; } = $@"{Id}Skins";
-        public static string IsSkinChangerId { get; private set; } = $@"{Id}IsSkinChanger";
+        public static string SkinChangerId { get; private set; } = $@"{Id}SkinChanger";
 
         public static Menu MainMenu
         {
@@ -21,10 +22,11 @@ namespace EnsoulAbarca
             {
                 if (_mainMenu == null)
                 {
-                    _mainMenu = new Menu(Id, Id, true);
-                    _mainMenu.Attach();
-                    _mainMenu.Add(IsSkinChangerMenu);
-                    _mainMenu.Add(SkinMenu);
+                    _mainMenu = new Menu(Id, Id, true)
+                    {
+                        SkinChangerMenu,
+                        SkinMenu
+                    };
                 }
 
                 return _mainMenu;
@@ -47,7 +49,7 @@ namespace EnsoulAbarca
         }
         private static MenuSlider _skinMenu;
 
-        public static MenuBool IsSkinChangerMenu { get; private set; } = new MenuBool(IsSkinChangerId, "Use Skin Changer?", false);
+        public static MenuBool SkinChangerMenu { get; private set; } = new MenuBool(SkinChangerId, "Use Skin Changer?", false);
 
         #endregion
         #region Methods
@@ -55,19 +57,21 @@ namespace EnsoulAbarca
         public static void OnGameLoad()
         {
             Game.OnNotify += OnNotify;
+            Game.OnUpdate += OnUpdate;
             Game.Print($@"{Id} loaded", Color.Coral);
-            ObjectManager.Player.SetSkin(MainMenu.GetValue<MenuSlider>().Value);
+            MainMenu.Attach();
+            ObjectManager.Player.SetSkin(SkinMenu.Value);
 
         }
 
         private static void SetSkinId()
         {
-            if (!MainMenu.GetValue<MenuBool>().Enabled)
+            if (!SkinChangerMenu.Enabled)
             {
                 return;
             }
 
-            ObjectManager.Player.SetSkin(MainMenu.GetValue<MenuSlider>().Value);
+            ObjectManager.Player.SetSkin(SkinMenu.Value);
         }
 
         private static void OnNotify(GameNotifyEventArgs args)
@@ -79,6 +83,16 @@ namespace EnsoulAbarca
                     SetSkinId();
                     break;
             }
+        }
+
+        private static void OnUpdate(EventArgs args)
+        {
+            switch (ObjectManager.Player.Name)
+            {
+                case "MasterYi":
+                    MasterYi.AutoAttack();
+                    break;
+            }            
         }
 
         private static void SkinListOnValueChanged(object sender, EventArgs e) => SetSkinId();
