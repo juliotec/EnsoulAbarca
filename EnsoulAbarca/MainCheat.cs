@@ -87,7 +87,7 @@ namespace EnsoulAbarca
 
         private static void OnUpdate(EventArgs args)
         {
-            switch (ObjectManager.Player.Name)
+            switch (ObjectManager.Player.CharacterName)
             {
                 case "MasterYi":
                     MasterYi.AutoAttack();
