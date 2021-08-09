@@ -1,5 +1,5 @@
-﻿using System.Drawing;
-using System.Linq;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using EnsoulSharp;
 using EnsoulSharp.SDK;
 
@@ -18,6 +18,8 @@ namespace EnsoulAbarca.Champions
         public static SpellDataInst E { get; private set; } = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.E);
 
         public static SpellDataInst R { get; private set; } = ObjectManager.Player.Spellbook.GetSpell(SpellSlot.R);
+
+        public static bool IsAutoAttack { get; private set; }
 
         #endregion
         #region Methods
@@ -53,7 +55,7 @@ namespace EnsoulAbarca.Champions
 
         public static void AutoAttack()
         {
-            if (ObjectManager.Player.IsDead)
+            if (IsAutoAttack || ObjectManager.Player.IsDead)
             {
                 return;
             }
@@ -64,6 +66,8 @@ namespace EnsoulAbarca.Champions
 
                 if (target != null)
                 {
+                    IsAutoAttack = true;
+
                     var flaskSlot = ObjectManager.Player.GetSpellSlot("ItemCrystalFlask");
 
                     if (flaskSlot != SpellSlot.Unknown)
@@ -82,6 +86,12 @@ namespace EnsoulAbarca.Champions
                     }
 
                     ObjectManager.Player.Spellbook.CastSpell(SpellSlot.Q, target);
+
+                    Task.Run(async () =>
+                    {
+                        await Task.Delay(1000);
+                        IsAutoAttack = false;
+                    });
                 }
             }
         }
